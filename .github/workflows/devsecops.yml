@@ -16,10 +16,9 @@ jobs:
             -v "$HOME/.cache/trivy":/root/.cache/ \
             aquasec/trivy:latest fs \
               --scanners vuln \
-              --file-patterns "python:requirements.txt" \
               --exit-code 1 \
               --severity HIGH,CRITICAL \
-              /project
+              /project/requirements.txt
 
   Dockerfile:
     runs-on: ubuntu-latest
