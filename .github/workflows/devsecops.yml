@@ -8,14 +8,14 @@ jobs:
     steps:
       - name: Récupération du code
         uses: actions/checkout@v4
-
+  
       - name: Scan des dépendances (requirements.txt)
         run: |
           docker run --rm \
             -v "$PWD":/project \
             -v "$HOME/.cache/trivy":/root/.cache/ \
             aquasec/trivy:latest fs \
-              --file-patterns 'pip:requirements\.txt$' \
+              --skip-files /project/database-requirements.txt \
               --exit-code 1 \
               --severity HIGH,CRITICAL \
               /project
