@@ -15,9 +15,10 @@ jobs:
             -v "$PWD":/project \
             -v "$HOME/.cache/trivy":/root/.cache/ \
             aquasec/trivy:latest fs \
+              --file-patterns 'pip:requirements\.txt$' \
               --exit-code 1 \
               --severity HIGH,CRITICAL \
-              /project/requirements.txt
+              /project
 
   Dockerfile:
     runs-on: ubuntu-latest
@@ -26,7 +27,6 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v4
 
-      # Contrôle du Dockerfile (misconfigurations)
       - name: Scan du Dockerfile avec Trivy
         run: |
           docker run --rm \
