@@ -9,8 +9,28 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v4
   
+      - name: Recherche du fichier requirements.txt
+        id: find_requirements
+        run: |
+          # Chercher requirements.txt dans le repo
+          REQUIREMENTS_PATH=$(find . -name "requirements.txt" -type f | head -n 1)
+          
+          if [ -z "$REQUIREMENTS_PATH" ]; then
+            echo "❌ Erreur: requirements.txt introuvable!"
+            exit 1
+          fi
+          
+          echo "✅ Fichier trouvé: $REQUIREMENTS_PATH"
+          
+          # Convertir le chemin relatif en chemin absolu pour Docker
+          FULL_PATH=$(realpath "$REQUIREMENTS_PATH")
+          echo "requirements_path=$REQUIREMENTS_PATH" >> $GITHUB_OUTPUT
+          echo "requirements_full_path=$FULL_PATH" >> $GITHUB_OUTPUT
+  
       - name: Scan des dépendances (requirements.txt)
         run: |
+          echo "Scan des dépendances: ${{ steps.find_requirements.outputs.requirements_path }}"
+          
           docker run --rm \
             -v "$PWD":/project \
             -v "$HOME/.cache/trivy":/root/.cache/ \
@@ -18,8 +38,7 @@ jobs:
               --scanners vuln \
               --exit-code 1 \
               --severity HIGH,CRITICAL \
-              /project/breakableflask/requirements.txt
-
+              /project/${{ steps.find_requirements.outputs.requirements_path }}
   Dockerfile:
     runs-on: ubuntu-latest
     needs: Dependances
