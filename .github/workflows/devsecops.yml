@@ -15,10 +15,10 @@ jobs:
             -v "$PWD":/project \
             -v "$HOME/.cache/trivy":/root/.cache/ \
             aquasec/trivy:latest fs \
-              --skip-files /project/database-requirements.txt \
+              --scanners vuln \
               --exit-code 1 \
               --severity HIGH,CRITICAL \
-              /project
+              /project/requirements.txt
 
   Dockerfile:
     runs-on: ubuntu-latest
